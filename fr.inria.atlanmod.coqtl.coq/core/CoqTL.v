@@ -30,16 +30,18 @@ Section CoqTL.
   
   (** * Rule **)
   
+  Fixpoint denoteModelClassOnList (l : list SourceModelClass) := 
+    match l with
+    | nil  => (fun (x: Set) => bool)
+    | e :: l' => (fun (x: Set) => denoteModelClassOnList l')
+    end.
+  
+  
   Inductive Rule: Type :=
-  | BuildMultiElemRule :
+  | BuildRule :
       forall 
-        (* Input Elem Type *) (InElType: SourceModelClass),
-        (* Rule currying *) (SourceModel -> (denoteModelClass InElType) -> Rule) -> 
-        Rule
-  | BuildSingleElemRule :
-      forall 
-        (* Input Elem Type *) (InElType: SourceModelClass),
-        (* Guard function *) (SourceModel -> (denoteModelClass InElType) -> (bool)) -> 
+        (* Input Elem Type *) (InElTypes: list SourceModelClass),
+        (* Rule currying *) (SourceModel -> (denoteModelClassOnList InElTypes) -> Rule) -> 
         Rule.
   
   
@@ -54,7 +56,12 @@ Section CoqTL.
 
 
 
-
+ Inductive Rule: Type :=
+  | BuildRule :
+      forall 
+        (* Input Elem Type *) (InElTypes: list SourceModelClass),
+        (* Rule currying *) (SourceModel -> (denoteModelClassOnList InElTypes) -> Rule) -> 
+        Rule.
 
 
 
