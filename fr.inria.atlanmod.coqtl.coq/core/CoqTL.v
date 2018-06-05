@@ -3,6 +3,7 @@ Require Import List.
 Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
+Require Import Coq.Numbers.NaryFunctions.
 
 Require Import core.Metamodel.
 Require Import core.Model.
@@ -30,18 +31,13 @@ Section CoqTL.
   
   (** * Rule **)
   
-  Fixpoint denoteModelClassOnList (l : list SourceModelClass) := 
-    match l with
-    | nil  => (fun (x: Set) => bool)
-    | e :: l' => (fun (x: Set) => denoteModelClassOnList l')
-    end.
-  
-  
+  Fixpoint genNaryFunction (l : list SourceModelClass) (A: Type) (B: Type) := nfun A (length l) B.
+
   Inductive Rule: Type :=
   | BuildRule :
       forall 
         (* Input Elem Type *) (InElTypes: list SourceModelClass),
-        (* Rule currying *) (SourceModel -> (denoteModelClassOnList InElTypes) -> Rule) -> 
+        (* Genric guard function *) (SourceModel -> (nfun nat (length InElTypes) bool)) -> 
         Rule.
   
   
@@ -55,32 +51,22 @@ Section CoqTL.
       Transformation.
 
 
-
- Inductive Rule: Type :=
-  | BuildRule :
-      forall 
-        (* Input Elem Type *) (InElTypes: list SourceModelClass),
-        (* Rule currying *) (SourceModel -> (denoteModelClassOnList InElTypes) -> Rule) -> 
-        Rule.
-
-
-
-
-
   
 End CoqTL.
 
 About BuildRule.
 
-Arguments BuildSingleElemRule : default implicits.
-Arguments BuildMultiElemRule : default implicits.
+Arguments BuildRule : default implicits.
+Arguments genNaryFunction : default implicits.
+
+Check (nfun nat 1 bool).
+Check  napply_cst nat bool 1 1.
+
 
  Definition Class2Relational :=
   (BuildTransformation ClassMetamodel RelationalMetamodel
-    [(BuildSingleElemRule ClassMetamodel (ClassEClass) (fun (m: ClassModel) (c: Class) => true) ) ;
-     (BuildSingleElemRule ClassMetamodel (AttributeEClass) (fun (m: ClassModel) (a: Attribute) => (negb (getAttributeDerived a)))) ;
-     (BuildMultiElemRule AttributeEClass 
-        (fun (m: ClassModel) (a: denoteModelClass AttributeEClass) => (BuildSingleElemRule ClassMetamodel (ClassEClass) (fun (m: ClassModel) (c: Class) => true) )))
+    [(BuildRule [ClassEClass] (fun (m: ClassModel) =>  napply_cst nat bool 1 1 ) ) 
+    
     ])
   .
   
