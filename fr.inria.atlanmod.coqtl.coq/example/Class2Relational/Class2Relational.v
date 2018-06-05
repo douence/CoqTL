@@ -30,7 +30,7 @@ Definition Class2Relational :=
             ])                               
         ]);
      (BuildRule [AttributeEClass]
-        (fun (m: ClassModel) (a: Attribute) => true)
+        (fun (m: ClassModel) (a: Attribute) => (negb (getAttributeDerived a))
         [
         (BuildOutputPatternElement "col" ColumnClass
             (fun (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
