@@ -17,6 +17,8 @@ Require Import example.RelationalMetamodel.
 
 Set Implicit Arguments.
 
+
+
 Section CoqTL.
 
   Variables (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
@@ -30,14 +32,12 @@ Section CoqTL.
   (** ** Abstract Syntax **)
   
   (** * Rule **)
-  
-  Fixpoint genNaryFunction (l : list SourceModelClass) (A: Type) (B: Type) := nfun A (length l) B.
 
   Inductive Rule: Type :=
   | BuildRule :
       forall 
         (* Input Elem Type *) (InElTypes: list SourceModelClass),
-        (* Genric guard function *) (SourceModel -> (nfun nat (length InElTypes) bool)) -> 
+        (* Genric guard function *) (SourceModel -> (nfun ClassMetamodel_EObject (length InElTypes) bool)) -> 
         Rule.
   
   
@@ -57,21 +57,31 @@ End CoqTL.
 About BuildRule.
 
 Arguments BuildRule : default implicits.
-Arguments genNaryFunction : default implicits.
 
+(* Help to understand what is a nary function of Coq *)
+Check  (fun (x: nat) (y: nat) => x > 1 /\  y>1) : (nfun nat 2 Prop).
 
-Check (nfun nat 1 Prop).
-Check  (fun x: nat => x > 1) : (nfun nat 1 Prop).
+(* Reuse rule notation for testing *)
+Notation "'[' r1 ; .. ; r2 ']'" := (cons r1 .. (cons r2 nil) ..) (right associativity, at level 9).
 
-
- Definition Class2Relational :=
+(* A test case *)
+(* TODO think of syntac sugar for guard *)
+Definition Class2Relational :=
   (BuildTransformation ClassMetamodel RelationalMetamodel
-    [(BuildRule [ClassEClass] (fun (m: ClassModel) =>  napply_cst nat bool 1 1 ) ) 
-    
+    [ (BuildRule [ClassEClass] (fun (m: ClassModel) (c: ClassMetamodel_EObject) => 
+                                        match c with
+                                          | ClassMetamodel_BuildEObject ClassEClass clazz => true
+                                          | ClassMetamodel_BuildEObject AttributeEClass attr => false
+                                        end) )  ;
+      (BuildRule [AttributeEClass] (fun (m: ClassModel) (a: ClassMetamodel_EObject) => 
+                                        match a with
+                                          | ClassMetamodel_BuildEObject ClassEClass clazz => false
+                                          | ClassMetamodel_BuildEObject AttributeEClass attr => (negb (getAttributeDerived attr))
+                                        end))
     ])
   .
   
-
+(*
   (** ** OutputPatternElementReference **)
 
   (* Build OutputPatternElementReference with :
@@ -442,3 +452,5 @@ Arguments BuildOutputPatternElementReference : default implicits.
 Arguments resolve : default implicits.
 Arguments execute : default implicits.
 Arguments getOutputPatternElementTargetModelElement : default implicits.
+
+*)
