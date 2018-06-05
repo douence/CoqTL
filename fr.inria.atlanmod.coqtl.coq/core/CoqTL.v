@@ -10,7 +10,7 @@ Require Import core.Model.
 Require Import core.Engine.
 Require Import core.utils.tTop.
 Require Import core.utils.tList.
-Require Import core.Notations.
+
 
 Require Import example.ClassMetamodel.
 Require Import example.RelationalMetamodel.
