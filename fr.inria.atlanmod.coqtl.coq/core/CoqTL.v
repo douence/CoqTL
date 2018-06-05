@@ -59,8 +59,9 @@ About BuildRule.
 Arguments BuildRule : default implicits.
 Arguments genNaryFunction : default implicits.
 
-Check (nfun nat 1 bool).
-Check  napply_cst nat bool 1 1.
+
+Check (nfun nat 1 Prop).
+Check  (fun x: nat => x > 1) : (nfun nat 1 Prop).
 
 
  Definition Class2Relational :=
