@@ -1,4 +1,3 @@
-Require Import core.CoqTL.
 
 (** * Notations **)
 
