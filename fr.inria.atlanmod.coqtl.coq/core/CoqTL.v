@@ -71,12 +71,12 @@ Definition Class2Relational :=
     [ (BuildRule [ClassEClass] (fun (m: ClassModel) (c: ClassMetamodel_EObject) => 
                                         match c with
                                           | ClassMetamodel_BuildEObject ClassEClass clazz => true
-                                          | ClassMetamodel_BuildEObject AttributeEClass attr => false
+                                          | _ => false
                                         end) )  ;
       (BuildRule [AttributeEClass] (fun (m: ClassModel) (a: ClassMetamodel_EObject) => 
                                         match a with
-                                          | ClassMetamodel_BuildEObject ClassEClass clazz => false
                                           | ClassMetamodel_BuildEObject AttributeEClass attr => (negb (getAttributeDerived attr))
+                                          | _ => false
                                         end))
     ])
   .
