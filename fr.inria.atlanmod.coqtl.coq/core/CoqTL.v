@@ -37,7 +37,7 @@ Section CoqTL.
   | BuildRule :
       forall 
         (* Input Elem Type *) (InElTypes: list SourceModelClass),
-        (* Genric guard function *) (SourceModel -> (nfun ClassMetamodel_EObject (length InElTypes) bool)) -> 
+        (* Genric guard function *) (SourceModel -> (nfun SourceModelElement (length InElTypes) bool)) -> 
         Rule.
   
   
